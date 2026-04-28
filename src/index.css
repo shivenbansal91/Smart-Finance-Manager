@@ -1,0 +1,208 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* Smart Finance Manager - Modern Fintech Dark Theme
+   All colors MUST be HSL. */
+
+@layer base {
+  :root {
+    /* Deep midnight base */
+    --background: 230 30% 6%;
+    --foreground: 220 20% 96%;
+
+    --card: 230 28% 9%;
+    --card-foreground: 220 20% 96%;
+
+    --popover: 230 30% 8%;
+    --popover-foreground: 220 20% 96%;
+
+    /* Electric mint primary */
+    --primary: 158 84% 52%;
+    --primary-foreground: 230 40% 8%;
+    --primary-glow: 158 90% 65%;
+
+    /* Cobalt secondary */
+    --secondary: 230 25% 14%;
+    --secondary-foreground: 220 15% 88%;
+
+    --muted: 230 22% 13%;
+    --muted-foreground: 220 12% 60%;
+
+    /* Neon violet accent */
+    --accent: 268 88% 64%;
+    --accent-foreground: 220 20% 98%;
+
+    --success: 158 84% 52%;
+    --warning: 38 95% 60%;
+    --destructive: 0 84% 62%;
+    --destructive-foreground: 220 20% 98%;
+
+    --border: 230 22% 16%;
+    --input: 230 22% 14%;
+    --ring: 158 84% 52%;
+
+    --radius: 0.875rem;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(158 84% 52%), hsl(180 80% 55%));
+    --gradient-accent: linear-gradient(135deg, hsl(268 88% 64%), hsl(220 90% 60%));
+    --gradient-hero: radial-gradient(ellipse at top, hsl(268 88% 64% / 0.18), transparent 60%),
+                     radial-gradient(ellipse at bottom right, hsl(158 84% 52% / 0.15), transparent 60%),
+                     hsl(230 30% 6%);
+    --gradient-card: linear-gradient(145deg, hsl(230 28% 11% / 0.8), hsl(230 28% 8% / 0.6));
+
+    /* Shadows */
+    --shadow-glow: 0 0 40px hsl(158 84% 52% / 0.25);
+    --shadow-card: 0 8px 32px hsl(230 50% 2% / 0.5);
+    --shadow-elevated: 0 20px 60px hsl(230 60% 2% / 0.6);
+
+    --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sidebar-background: 230 30% 7%;
+    --sidebar-foreground: 220 15% 80%;
+    --sidebar-primary: 158 84% 52%;
+    --sidebar-primary-foreground: 230 40% 8%;
+    --sidebar-accent: 230 25% 12%;
+    --sidebar-accent-foreground: 220 20% 96%;
+    --sidebar-border: 230 22% 14%;
+    --sidebar-ring: 158 84% 52%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html, body, #root {
+    @apply min-h-screen;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--gradient-hero);
+    background-attachment: fixed;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer components {
+  .glass {
+    background: var(--gradient-card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--border) / 0.6);
+    box-shadow: var(--shadow-card);
+  }
+  .glass-hover {
+    @apply transition-all duration-300;
+  }
+  .glass-hover:hover {
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow: var(--shadow-glow);
+    transform: translateY(-2px);
+  }
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .grid-bg {
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.4) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.4) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+}
+
+/* ── Bouncing-ball loader (Uiverse.io by mobinkakei) ─────────────────────────
+   Class names are prefixed with "loader-" to avoid collisions.              */
+.loader-wrapper {
+  width: 200px;
+  height: 60px;
+  position: relative;
+  z-index: 1;
+}
+
+.loader-circle {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  border-radius: 50%;
+  background-color: hsl(158 84% 52%);   /* matches --primary */
+  left: 15%;
+  transform-origin: 50%;
+  animation: loader-bounce 0.5s alternate infinite ease;
+}
+
+@keyframes loader-bounce {
+  0% {
+    top: 60px;
+    height: 5px;
+    border-radius: 50px 50px 25px 25px;
+    transform: scaleX(1.7);
+  }
+  40% {
+    height: 20px;
+    border-radius: 50%;
+    transform: scaleX(1);
+  }
+  100% {
+    top: 0%;
+  }
+}
+
+.loader-circle:nth-child(2) {
+  left: 45%;
+  animation-delay: 0.2s;
+}
+.loader-circle:nth-child(3) {
+  left: auto;
+  right: 15%;
+  animation-delay: 0.3s;
+}
+
+.loader-shadow {
+  width: 20px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+  position: absolute;
+  top: 62px;
+  transform-origin: 50%;
+  z-index: -1;
+  left: 15%;
+  filter: blur(1px);
+  animation: loader-shadow 0.5s alternate infinite ease;
+}
+
+@keyframes loader-shadow {
+  0%   { transform: scaleX(1.5); }
+  40%  { transform: scaleX(1);   opacity: 0.7; }
+  100% { transform: scaleX(0.2); opacity: 0.4; }
+}
+
+.loader-shadow:nth-child(4) {
+  left: 45%;
+  animation-delay: 0.2s;
+}
+.loader-shadow:nth-child(5) {
+  left: auto;
+  right: 15%;
+  animation-delay: 0.3s;
+}
+
+/* ── Utility: fade-in on mount ───────────────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.35s ease both;
+}
+
