@@ -1,4 +1,4 @@
-// MySQL REST API client — replaces Supabase client
+// Oracle REST API client — Smart Finance Manager
 // Usage: import { api } from "@/lib/api";
 
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
@@ -134,6 +134,53 @@ export const api = {
       request<{ ok: boolean }>(`/api/budget-alerts/${id}/read`, { method: "PATCH" }),
   },
 
+  // ── Insights ────────────────────────────────────────────────────────────────
+  insights: {
+    load: () => request<InsightsResponse>("/api/insights"),
+  },
+
+  // ── Subscriptions ───────────────────────────────────────────────────────────
+  subscriptions: {
+    list:   () => request<SubscriptionsResponse>("/api/subscriptions"),
+    detect: () => request<{ ok: boolean; detected: number; newlyAdded: number }>("/api/subscriptions/detect", { method: "POST" }),
+    toggle: (id: number) => request<{ ok: boolean }>(`/api/subscriptions/${id}/toggle`, { method: "PATCH" }),
+    remove: (id: number) => request<{ ok: boolean }>(`/api/subscriptions/${id}`, { method: "DELETE" }),
+  },
+
+  // ── Loans ───────────────────────────────────────────────────────────────────
+  loans: {
+    list:  () => request<Loan[]>("/api/loans"),
+    due:   () => request<Loan[]>("/api/loans/due"),
+    create: (body: {
+      lender_name: string;
+      principal: number;
+      interest_rate?: number;
+      emi_amount: number;
+      due_date: string;
+      notes?: string;
+      credit_account_id?: number;
+    }) => request<Loan>("/api/loans", { method: "POST", body: JSON.stringify(body) }),
+    pay: (id: number, amount: number, debit_account_id?: number) =>
+      request<Loan>(`/api/loans/${id}/pay`, { method: "PATCH", body: JSON.stringify({ amount, debit_account_id }) }),
+    close:  (id: number) => request<{ ok: boolean }>(`/api/loans/${id}/close`, { method: "PATCH" }),
+    remove: (id: number) => request<{ ok: boolean }>(`/api/loans/${id}`, { method: "DELETE" }),
+  },
+
+  // ── Bills ───────────────────────────────────────────────────────────────────
+  bills: {
+    list:   () => request<Bill[]>("/api/bills"),
+    due:    () => request<Bill[]>("/api/bills/due"),
+    create: (body: {
+      bill_name: string;
+      amount: number;
+      due_date: string;
+      recurrence?: "monthly" | "weekly" | "yearly" | "once";
+      reminder_days?: number;
+    }) => request<Bill>("/api/bills", { method: "POST", body: JSON.stringify(body) }),
+    pay:    (id: number) => request<Bill>(`/api/bills/${id}/pay`, { method: "PATCH" }),
+    remove: (id: number) => request<{ ok: boolean }>(`/api/bills/${id}`, { method: "DELETE" }),
+  },
+
   // ── Dashboard ───────────────────────────────────────────────────────────────
   dashboard: {
     load:   () => request<DashboardData>("/api/dashboard"),
@@ -211,4 +258,66 @@ export interface DashboardData {
   totalIncome: number;
   totalExpense: number;
   totalBalance: number;
+}
+
+export interface Insight {
+  type: "info" | "warning" | "success" | "danger" | "ai";
+  icon: string;
+  text: string;
+  suggestion: string | null;
+}
+
+export interface InsightsResponse {
+  insights: Insight[];
+  hasGemini: boolean;
+  generated: string;
+}
+
+export interface Subscription {
+  subscription_id: number;
+  user_id: number;
+  merchant: string;
+  amount: number;
+  interval_type: "monthly" | "weekly";
+  last_seen: string | null;
+  is_active: number;
+  detected_at: string;
+}
+
+export interface SubscriptionsResponse {
+  subscriptions: Subscription[];
+  monthlyTotal: number;
+}
+
+export interface Loan {
+  loan_id: number;
+  user_id: number;
+  lender_name: string;
+  principal: number;
+  interest_rate: number;
+  emi_amount: number;
+  due_date: string;
+  paid_amount: number;
+  remaining_balance: number;
+  progress_pct: number;
+  monthly_interest: number;
+  effective_emi: number;
+  status: "active" | "closed";
+  notes: string | null;
+  created_at: string;
+}
+
+export interface Bill {
+  bill_id: number;
+  user_id: number;
+  bill_name: string;
+  amount: number;
+  due_date: string;
+  recurrence: "monthly" | "weekly" | "yearly" | "once";
+  is_paid: number;
+  reminder_days: number;
+  created_at: string;
+  days_until_due: number | null;
+  is_overdue: boolean;
+  is_due_soon: boolean;
 }

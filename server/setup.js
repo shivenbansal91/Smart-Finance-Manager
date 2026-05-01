@@ -59,7 +59,10 @@ async function setup() {
     await run(conn, "CREATE SEQUENCE seq_categories START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE", [955]);
     await run(conn, "CREATE SEQUENCE seq_transactions START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE", [955]);
     await run(conn, "CREATE SEQUENCE seq_budgets    START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE", [955]);
-    await run(conn, "CREATE SEQUENCE seq_alerts     START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE", [955]);
+    await run(conn, "CREATE SEQUENCE seq_alerts         START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE", [955]);
+    await run(conn, "CREATE SEQUENCE seq_subscriptions  START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE", [955]);
+    await run(conn, "CREATE SEQUENCE seq_loans          START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE", [955]);
+    await run(conn, "CREATE SEQUENCE seq_bills          START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE", [955]);
     console.log("  ✅ Sequences created\n");
 
     // ── TABLES ────────────────────────────────────────────────────────────────
@@ -144,6 +147,59 @@ async function setup() {
         created_at   TIMESTAMP    DEFAULT SYSTIMESTAMP,
         CONSTRAINT fk_alert_user FOREIGN KEY (user_id)   REFERENCES users(user_id)     ON DELETE CASCADE,
         CONSTRAINT fk_alert_bud  FOREIGN KEY (budget_id) REFERENCES budgets(budget_id) ON DELETE CASCADE
+      )
+    `, [955]);
+
+    // ── SUBSCRIPTIONS ─────────────────────────────────────────────────────────
+    await run(conn, `
+      CREATE TABLE subscriptions (
+        subscription_id  NUMBER        PRIMARY KEY,
+        user_id          NUMBER        NOT NULL,
+        merchant         VARCHAR2(255) NOT NULL,
+        amount           NUMBER(14,2)  NOT NULL,
+        interval_type    VARCHAR2(10)  NOT NULL
+                         CONSTRAINT chk_sub_interval CHECK (interval_type IN ('monthly','weekly')),
+        last_seen        DATE,
+        is_active        NUMBER(1)     DEFAULT 1 NOT NULL,
+        detected_at      TIMESTAMP     DEFAULT SYSTIMESTAMP,
+        CONSTRAINT fk_sub_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+        CONSTRAINT uniq_sub_user_merchant UNIQUE (user_id, merchant, amount)
+      )
+    `, [955]);
+
+    // ── LOANS ─────────────────────────────────────────────────────────────────
+    await run(conn, `
+      CREATE TABLE loans (
+        loan_id          NUMBER        PRIMARY KEY,
+        user_id          NUMBER        NOT NULL,
+        lender_name      VARCHAR2(150) NOT NULL,
+        principal        NUMBER(14,2)  NOT NULL,
+        interest_rate    NUMBER(5,2)   DEFAULT 0,
+        emi_amount       NUMBER(14,2)  NOT NULL,
+        due_date         DATE          NOT NULL,
+        paid_amount      NUMBER(14,2)  DEFAULT 0,
+        status           VARCHAR2(20)  DEFAULT 'active'
+                         CONSTRAINT chk_loan_status CHECK (status IN ('active','closed')),
+        notes            VARCHAR2(500),
+        created_at       TIMESTAMP     DEFAULT SYSTIMESTAMP,
+        CONSTRAINT fk_loan_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+      )
+    `, [955]);
+
+    // ── BILLS ─────────────────────────────────────────────────────────────────
+    await run(conn, `
+      CREATE TABLE bills (
+        bill_id          NUMBER        PRIMARY KEY,
+        user_id          NUMBER        NOT NULL,
+        bill_name        VARCHAR2(150) NOT NULL,
+        amount           NUMBER(14,2)  NOT NULL,
+        due_date         DATE          NOT NULL,
+        recurrence       VARCHAR2(20)  DEFAULT 'monthly'
+                         CONSTRAINT chk_bill_rec CHECK (recurrence IN ('monthly','weekly','yearly','once')),
+        is_paid          NUMBER(1)     DEFAULT 0 NOT NULL,
+        reminder_days    NUMBER        DEFAULT 3,
+        created_at       TIMESTAMP     DEFAULT SYSTIMESTAMP,
+        CONSTRAINT fk_bill_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
       )
     `, [955]);
 

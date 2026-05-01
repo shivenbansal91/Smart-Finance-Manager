@@ -11,6 +11,9 @@ import Accounts from "./pages/Accounts";
 import Transactions from "./pages/Transactions";
 import Budgets from "./pages/Budgets";
 import Categories from "./pages/Categories";
+import Insights from "./pages/Insights";
+import Recurring from "./pages/Recurring";
+import Loans from "./pages/Loans";
 import AppLayout from "./components/AppLayout";
 import Loader from "./components/Loader";
 import NotFound from "./pages/NotFound";
@@ -40,6 +43,9 @@ const App = () => (
               <Route path="/transactions" element={<Transactions />} />
               <Route path="/budgets" element={<Budgets />} />
               <Route path="/categories" element={<Categories />} />
+              <Route path="/insights" element={<Insights />} />
+              <Route path="/recurring" element={<Recurring />} />
+              <Route path="/loans" element={<Loans />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

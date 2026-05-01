@@ -1,5 +1,9 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Wallet, ArrowLeftRight, Target, Tag, LogOut, Bell, WifiOff, Trash2, User } from "lucide-react";
+import {
+  LayoutDashboard, Wallet, ArrowLeftRight, Target,
+  LogOut, Bell, WifiOff, Trash2,
+  Lightbulb, Repeat, Landmark, Tag,
+} from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useRef, useState } from "react";
 import { api } from "@/lib/api";
@@ -10,7 +14,9 @@ const links = [
   { to: "/accounts",     label: "Accounts",     icon: Wallet },
   { to: "/transactions", label: "Transactions", icon: ArrowLeftRight },
   { to: "/budgets",      label: "Budgets",      icon: Target },
-  { to: "/categories",   label: "Categories",   icon: Tag },
+  { to: "/insights",     label: "Insights",     icon: Lightbulb },
+  { to: "/recurring",    label: "Recurring",    icon: Repeat },
+  { to: "/loans",        label: "Loans",        icon: Landmark },
 ];
 
 /** Gmail-style circular avatar button with dropdown */
@@ -83,6 +89,14 @@ function UserMenu() {
 
           {/* Actions */}
           <div className="p-1.5 space-y-0.5">
+            <NavLink
+              to="/categories"
+              onClick={() => setOpen(false)}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors"
+            >
+              <Tag className="w-4 h-4 shrink-0" />
+              Manage Categories
+            </NavLink>
             <button
               id="signout-btn"
               onClick={handleSignOut}
@@ -214,14 +228,14 @@ export default function AppLayout() {
             <Outlet />
           </div>
 
-          {/* Mobile bottom nav */}
-          <nav className="md:hidden sticky bottom-0 glass border-t border-border/60 grid grid-cols-5 gap-1 p-2">
+          {/* Mobile bottom nav — scrollable for 9 items */}
+          <nav className="md:hidden sticky bottom-0 glass border-t border-border/60 flex overflow-x-auto gap-1 p-2 scrollbar-none">
             {links.map(({ to, label, icon: Icon }) => (
               <NavLink
                 key={to}
                 to={to}
                 className={({ isActive }) =>
-                  `flex flex-col items-center gap-1 py-2 rounded-lg text-[10px] ${
+                  `flex flex-col items-center gap-1 py-2 px-3 rounded-lg text-[10px] shrink-0 whitespace-nowrap ${
                     isActive ? "text-primary" : "text-muted-foreground"
                   }`
                 }

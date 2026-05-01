@@ -66,9 +66,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <footer className="relative z-10 border-t border-border/40 py-8 text-center text-sm text-muted-foreground">
-        Built with React, TypeScript &amp; MySQL · ER model normalized to 3NF · DBMS Mini Project
-      </footer>
+      <footer className="relative z-10 border-t border-border/40 py-8" />
     </div>
   );
 }
